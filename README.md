@@ -33,7 +33,8 @@ three fields: `severity`,`facility` and `message`:
 
 This example is based on a Logstash file input plugin. Other inputs can be used
 as well. The date filter moves the timestamp of the log event to the field
-`@timestamp`, which is used by default in Kibana to sort events.
+`@timestamp`, which is used by default in
+[Kibana](https://www.elastic.co/products/kibana) to sort events.
 
 ```ruby
 input {
@@ -82,7 +83,8 @@ into three fields: `severity`,`facility` and `message`:
 
 This example is based on a Logstash file input plugin. Other inputs can be used
 as well. The date filter moves the timestamp of the log event to the field
-`@timestamp`, which is used by default in Kibana to sort events.
+`@timestamp`, which is used by default in
+[Kibana](https://www.elastic.co/products/kibana) to sort events.
 
 ```ruby
 input {
@@ -113,6 +115,50 @@ filter {
       target         => "@timestamp"
       remove_field   => ["icinga.debug.timestamp"]
       tag_on_failure => ["_dateparsefailur", "filter.icinga.debug.date.failure"]
+    }
+  }
+}
+
+output {
+  stdout {
+    codec => "rubydebug"
+  }
+}
+```
+
+### Icinga 2 Startup Log
+The startup log of Icinga 2 is generated each time when the daemon is restarted
+or reloaded. It includes information about the amount of objects on startup,
+which features are enabled, connection to the database and suchlike. The startup
+log does not include a timestamp, the file is rewritten completely every time.
+
+This example is based on a Logstash file input plugin. Other inputs can be used
+as well.
+
+```shell
+input {
+  file {
+    path           => "/var/log/icinga2/startup.log"
+    type           => "icinga.startup"
+    start_position => "beginning"
+    sincedb_path   => "/dev/null"
+    codec          => multiline {
+      pattern             => "^[a-z]*\/[a-zA-Z]*:"
+      negate              => true
+      what                => previous
+      auto_flush_interval => 2
+    }
+  }
+}
+
+filter {
+  if [type] == "icinga.startup" {
+    grok {
+      patterns_dir   => ["/etc/logstash/patterns/icinga"]
+      match          => ["message", "%{ICINGA_STARTUP}"]
+      remove_field   => ["message"]
+      add_tag        => ["filter.grok.icinga.startup"]
+      tag_on_failure => ["_grokparsefailure", "filter.grok.icinga.startup.failure"]
     }
   }
 }
