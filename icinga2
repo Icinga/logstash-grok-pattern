@@ -1,0 +1,4 @@
+ICINGA_TIMESTAMP %{YEAR}-%{MONTHNUM}-%{MONTHDAY} %{HOUR}:%{MINUTE}:%{SECOND} %{ISO8601_TIMEZONE}
+ICINGA_MAIN \[%{ICINGA_TIMESTAMP:icinga.main.timestamp}\] %{WORD:icinga.main.severity}/%{WORD:icinga.main.facility}: %{GREEDYDATA:icinga.main.message}
+ICINGA_DEBUG \[%{ICINGA_TIMESTAMP:icinga.debug.timestamp}\] %{WORD:icinga.debug.severity}/%{WORD:icinga.debug.facility}: %{GREEDYDATA:icinga.debug.message}
+ICINGA_STARTUP %{WORD:icinga.startup.severity}/%{WORD:icinga.startup.facility}: %{GREEDYDATA:icinga.startup.message}
