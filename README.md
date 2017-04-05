@@ -10,6 +10,12 @@ parse log events and split messages into multiple fields. Instead of writing
 regular expressions, users use predefined patterns to parse logs. Besides the
 included patterns, custom patterns can be added to extend the functionality.
 
+1. [Installation](#installation)
+2. [Examples](#examples)
+    * [Icinga 2 Main Log](#icinga-2-main-log)
+    * [Icinga 2 Debug Log](#icinga-2-debug-log)
+    * [Icinga 2 Startup Log](#icinga-2-startup-log)
+
 ## Installation
 Custom patterns need to be accessible by the Logstash daemon. It does not matter
 where you put the files on the file system, as long as they are readable to the
@@ -19,6 +25,16 @@ where you put the files on the file system, as long as they are readable to the
 mkdir /etc/logstash/patterns
 cd /etc/logstash/patterns
 git clone https://github.com/Icinga/logstash-grok-pattern.git icinga
+```
+
+To use custom patterns, include the directory with the `patterns_dir` paramter
+in your grok filter:
+
+```ruby
+grok {
+  patterns_dir   => ["/etc/logstash/patterns/icinga"]
+  ...
+}
 ```
 
 ## Examples
